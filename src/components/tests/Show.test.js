@@ -6,21 +6,84 @@ import Show from './../Show';
 
 const testShow = {
     //add in approprate test data structure here.
+    name: "Person of Interest",
+    summary: "You are being watched. The government has a secret system, a machine that spies on you every hour of every day. I know because I built it. I designed the Machine to detect acts of terror but it sees everything. Violent crimes involving ordinary people. People like you. Crimes the government considered \"irrelevant\". They wouldn't act so I decided I would. But I needed a partner. Someone with the skills to intervene. Hunted by the authorities, we work in secret. You'll never find us. But victim or perpetrator, if your number is up, we'll find you.",
+    seasons: [
+        {id: 0, name: 'Season 1', episodes: []}, 
+        {id: 1, name: 'Season 2', episodes: []}, 
+        {id: 2, name: 'Season 3', episodes: []}, 
+        {id: 3, name: 'Season 4', episodes: []},
+        {id: 4, name: 'Season 5', episodes: []},
+    ],
 }
 
 test('renders testShow and no selected Season without errors', ()=>{
+    render(<Show show={testShow} selectedSeason={'none'} />);
 });
 
 test('renders Loading component when prop show is null', () => {
+    // --- ARRANGE ---
+    // Render Show component with no show data, no selected season
+    render(<Show show={null} selectedSeason={'none'} />);
+
+    // --- ACT ---
+    // Get loading message element
+    const loading = screen.getByTestId('loading-container');
+
+    // --- ASSERT ---
+    // Check that loading message is in the document and has expected text content
+    expect(loading).toBeInTheDocument();
+    expect(loading).toHaveTextContent(/fetching data.../i);
 });
 
 test('renders same number of options seasons are passed in', ()=>{
+    // --- ARRANGE ---
+    // Render Show component with test data, no selected season
+    render(<Show show={testShow} selectedSeason={'none'} />);
+
+    // --- ACT ---
+    // Get season <option> elements
+    const seasonOptions = screen.queryAllByTestId('season-option');
+
+    // --- ASSERT ---
+    // Check that seasonOption is not null and has the
+    // same length as test data seasons array length
+    expect(seasonOptions).not.toBeNull();
+    expect(seasonOptions).toHaveLength(testShow.seasons.length);
 });
 
 test('handleSelect is called when an season is selected', () => {
+    // Create mock function to replace handleSelect
+    const mockHandleSelect = jest.fn();
+    
+    // --- ARRANGE ---
+    // Render Show component with test data, no selected season, and mock function
+    render(<Show show={testShow} selectedSeason={'none'} handleSelect={mockHandleSelect} />);
+
+    // --- ACT ---
+    // Get season <select> and <option> elements
+    const seasonSelect = screen.getByLabelText(/select a season/i);
+    const seasonOptions = screen.queryAllByTestId('season-option');
+
+    // Select first <option> element
+    userEvent.selectOptions(seasonSelect, seasonOptions[0]);
+
+
+    // --- ASSERT ---
+    // Check that first <option> element is selected and all other <option> elements are not
+    expect(seasonOptions[0].selected).toBeTruthy();
+    expect(seasonOptions[1].selected).toBeFalsy();
+    expect(seasonOptions[2].selected).toBeFalsy();
+    expect(seasonOptions[3].selected).toBeFalsy();
+    expect(seasonOptions[4].selected).toBeFalsy();
+
+    // Check that mock handleSelect function was called, and was only called once
+    expect(mockHandleSelect).toHaveBeenCalled();
+    expect(mockHandleSelect.mock.calls.length).toBe(1);
 });
 
 test('component renders when no seasons are selected and when rerenders with a season passed in', () => {
+
 });
 
 //Tasks:
