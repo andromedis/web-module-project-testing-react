@@ -83,8 +83,32 @@ test('handleSelect is called when an season is selected', () => {
 });
 
 test('component renders when no seasons are selected and when rerenders with a season passed in', () => {
+    // --- ARRANGE (1) ---
+    // Render Show component with test data, no selected season, and destructure rerender function
+    const { rerender } = render(<Show show={testShow} selectedSeason={'none'} />);
+    
+    // --- ACT (1) ---
+    // Query episodes container element
+    let episodesContainer = screen.queryByTestId('episodes-container');
 
+    // --- ASSERT (1) ---
+    // Check that episodes container is /NOT/ in the document
+    expect(episodesContainer).not.toBeInTheDocument();
+
+    // --- ARRANGE (2) ---
+    // Rerender Show component with test data, selected season of 0
+    rerender(<Show show={testShow} selectedSeason={0} />);
+
+    // --- ACT (2) ---
+    // Query episodes container element and reassign
+    episodesContainer = screen.queryByTestId('episodes-container');
+
+    // --- ASSERT (2) ---
+    // Check that episodes container now /IS/ in the document
+    expect(episodesContainer).toBeInTheDocument();
 });
+
+
 
 //Tasks:
 //1. Build an example data structure that contains the show data in the correct format. A show should contain a name, a summary and an array of seasons, each with a id, name and (empty) list of episodes within them. Use console.logs within the client code if you need to to verify the structure of show data.
